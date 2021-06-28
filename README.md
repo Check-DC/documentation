@@ -5,4 +5,5 @@ The purpose of this guide is to define standards and also ensure that code writt
 As a an Engineer, code review/refactor is one of the most important aspects of what you do and doing it right is instrumental to writing better, highly scalable and extendable code.
 
 ## Table of Contents
--   [Best Practices](https://github.com/Check-DC/documentation/blob/main/best-practices.md)
+-   [General Best Practices](https://github.com/Check-DC/documentation/blob/main/best-practices.md)
+-   [UI Best Practices](https://github.com/Check-DC/documentation/blob/main/ui-best-practices.md)
