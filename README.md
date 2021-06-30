@@ -7,3 +7,4 @@ As a an Engineer, code review/refactor is one of the most important aspects of w
 ## Table of Contents
 -   [General Best Practices](https://github.com/Check-DC/documentation/blob/main/best-practices.md)
 -   [UI Best Practices](https://github.com/Check-DC/documentation/blob/main/ui-best-practices.md)
+-   [Nuxt(Vue) Best Practices](https://github.com/Check-DC/documentation/blob/main/nuxt-best-practices.md)
