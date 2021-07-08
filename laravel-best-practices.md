@@ -60,7 +60,8 @@ Article::has('user.profile')->verified()->latest()->get();
 ```
 if ($this->hasJoins())
 ```
-15. follow naming conventions accepted by Laravel community and PSR2
+15. Follow naming conventions accepted by Laravel community and PSR2
+
 What | How | Good | Bad
 ------------ | ------------- | ------------- | -------------
 Controller | singular | ArticleController | ~~ArticlesController~~
@@ -87,6 +88,8 @@ View | kebab-case | show-filtered.blade.php | ~~showFiltered.blade.php, show_fil
 Config | snake_case | google_calendar.php | ~~googleCalendar.php, google-calendar.php~~
 Contract (interface) | adjective or noun | AuthenticationInterface | ~~Authenticatable, IAuthentication~~
 Trait | adjective | Notifiable | ~~NotificationTrait~~
+
+
 
 
 
