@@ -106,6 +106,15 @@ module.exports = {
   plugins: ['prettier']
 }
 ```
+6.  The `.prettierrc`  should be setup with the preset rules as seen below:
+```
+{
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "none"
+}
+
+```
 
 ## Vue File
 1. All functions in the methods block must be in **camelCase**.  
