@@ -20,7 +20,7 @@ UI framework: {Tailwind CSS} Utility first and it's none un-intrusive to the web
 
 Nuxt.js modules: {Axios and PWA} These two are the select choices.
 
-Linting tools: {Eslint} This is the only select choice. Prettier should never be used.
+Linting tools: {Eslint} This is the only select choice.
 
 Testing framework: {optional but if required: Jest} This is preferred choice.
 
@@ -74,16 +74,22 @@ module.exports = {
     browser: true,
     node: true
   },
+  extends: [
+    '@nuxtjs',
+    'plugin:nuxt/recommended',
+    'eslint:recommended' // <- add this line
+    // 'plugin:prettier/recommended', <- remove this line
+  ],
   parserOptions: {
     parser: 'babel-eslint'
   },
-  extends: ['@nuxtjs', 'plugin:nuxt/recommended'],
-  plugins: [],
   // add your custom rules here
   rules: {
-    indent: 0,
+    indent: 2,
+    'arrow-parens': 0,
+    'no-new': 0,
+    'no-unused-expressions': 0,
     'vue/no-v-html': 0,
-    'vue/html-self-closing': 0,
     'space-before-function-paren': 0,
     'no-console': 0,
     'operator-linebreak': 0,
@@ -95,23 +101,19 @@ module.exports = {
       }
     ],
     'vue/no-vue-html': 0,
-    'vue/html-closing-bracket-newline': [
-      'error',
-      {
-        singleline: 'never',
-        multiline: 'never'
-      }
-    ]
+    'vue/singleline-html-element-content-newline': 0
   },
-  overrides: [
-    {
-      files: [''], // *filename
-      rules: {
-        'eslint-disable-file': 'off'
-      }
-    }
-  ]
+  plugins: ['prettier']
 }
+```
+6.  The `.prettierrc`  should be setup with the preset rules as seen below:
+```
+{
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "none"
+}
+
 ```
 
 ## Vue File
