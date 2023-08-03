@@ -1,5 +1,5 @@
 
-# Nuxt(Vue) Best Practices
+# Nuxt-2 Best Practices
 The Vue lifecycle comes in handy and increases frontend development ETA, Nuxt comes along with special features as an addition to this lifecycle, these special features are powered by the `nuxt.config.js` and this can immediately get opinionated and complex to scale.
 
 ## Installation 
