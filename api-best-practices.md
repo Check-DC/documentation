@@ -26,7 +26,6 @@ Every REST resource should expose a consistent set of endpoints so the frontend 
 | Update (PUT)               | `PUT`       | `/{resource}/{id}/update` | `/users/123/update`           |
 | Partial Update (PATCH)     | `PATCH`     | `/{resource}/{id}/update` | `/users/123/update`           |
 | Delete       | `DELETE`    | `/{resource}/{id}`       | `/users/123`                   |             |
-| Remove(Soft Delete)       | `POST`    | `/{resource}/delete`       | `/users/delete`                   |             |
 
 ---
 
@@ -58,20 +57,6 @@ Support filtering, pagination, and sorting parameters:
 
 ```
 GET /users?page=1&limit=20&status=active&sortBy=createdAt&order=desc
-```
-
-
-### Remove (Soft Delete) Requests
-
-For batch operations or soft deletes:
-
-```
-// POST /users/delete
-{
-  "ids": [1, 2, 3],
-  "reason": "User requested account deletion",
-  "notify": true
-}
 ```
 
 
