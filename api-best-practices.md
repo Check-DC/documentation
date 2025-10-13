@@ -55,7 +55,7 @@ Every REST resource should expose a consistent set of endpoints so the frontend 
 Support filtering, pagination, and sorting parameters:
 
 ```
-GET /users?page=1&limit=20&status=active&sortBy=createdAt&order=desc
+GET /users?page=1&limit=20&status=active&sort_by=created_at&order=desc
 ```
 
 ## 4. Response Structure
