@@ -55,7 +55,7 @@ Every REST resource should expose a consistent set of endpoints so the frontend 
 Support filtering, pagination, and sorting parameters:
 
 ```
-GET /users?page=1&limit=20&status=active&sortBy=createdAt&order=desc
+GET /users?page=1&limit=20&status=active&sort_by=created_at&order=desc
 ```
 
 ## 4. Response Structure
@@ -286,3 +286,137 @@ return OrderResource::collection($orders)->response();
 - **Conditional filtering** using `$request->has()`
 - **Use resource collections** for consistent formatting
 - **Call `->response()`** on collections for proper pagination metadata
+
+---
+
+## 8. Transaction Locking (Preventing Race Conditions)
+
+When handling operations that modify shared resources (e.g., inventory, wallet balances, order processing), use proper locking mechanisms to prevent race conditions and double spending issues.
+
+### Pessimistic Locking
+
+Pessimistic locking uses database row locks (`FOR UPDATE`) to prevent concurrent access during a transaction. This is ideal for critical operations where conflicts are likely.
+
+```php
+use Illuminate\Support\Facades\DB;
+
+DB::transaction(function () use ($userId, $amount) {
+    // Lock the user's wallet row until transaction completes
+    $wallet = Wallet::where('user_id', $userId)
+        ->lockForUpdate()
+        ->first();
+
+    if ($wallet->balance < $amount) {
+        throw new \Exception('Insufficient balance');
+    }
+
+    // Deduct amount - no other transaction can modify this row
+    $wallet->balance -= $amount;
+    $wallet->save();
+
+    // Create transaction record
+    Transaction::create([
+        'wallet_id' => $wallet->id,
+        'amount' => $amount,
+        'type' => 'debit',
+    ]);
+});
+```
+
+### Atomic Operations
+
+For simple increment/decrement operations, use atomic updates that execute in a single database query, eliminating race conditions without explicit locks.
+
+```php
+// ❌ Unsafe - prone to race conditions
+$product = Product::find($productId);
+$product->stock -= $quantity;
+$product->save();
+
+// ✅ Safe - atomic operation
+Product::where('id', $productId)
+    ->where('stock', '>=', $quantity)
+    ->decrement('stock', $quantity);
+
+// Verify the update succeeded
+$affected = Product::where('id', $productId)
+    ->where('stock', '>=', $quantity)
+    ->decrement('stock', $quantity);
+
+if ($affected === 0) {
+    throw new \Exception('Insufficient stock or product not found');
+}
+```
+
+### Combining Both Approaches
+
+For complex operations involving multiple models, combine pessimistic locking with atomic operations:
+
+```php
+DB::transaction(function () use ($orderId, $items) {
+    // Lock the order to prevent duplicate processing
+    $order = Order::where('id', $orderId)
+        ->where('status', 'pending')
+        ->lockForUpdate()
+        ->firstOrFail();
+
+    foreach ($items as $item) {
+        // Atomically decrement stock
+        $affected = Product::where('id', $item['product_id'])
+            ->where('stock', '>=', $item['quantity'])
+            ->decrement('stock', $item['quantity']);
+
+        if ($affected === 0) {
+            throw new \Exception("Insufficient stock for product {$item['product_id']}");
+        }
+    }
+
+    // Update order status
+    $order->status = 'confirmed';
+    $order->save();
+});
+```
+
+### When to Use Each Approach
+
+| Scenario | Approach | Reason |
+|----------|----------|--------|
+| Single numeric field update | Atomic Operations | Fastest, no locks needed |
+| Multiple related updates | Pessimistic Locking | Ensures consistency across operations |
+| High contention operations | Pessimistic Locking | Prevents conflicts explicitly |
+| Read-then-write logic | Pessimistic Locking | Prevents stale reads |
+| Simple counters | Atomic Operations | Most efficient for increments/decrements |
+
+### Best Practices
+
+- **Always use transactions** when multiple operations must succeed together
+- **Lock only what you need** - be specific with WHERE clauses
+- **Keep transactions short** - acquire locks, do work, release quickly
+- **Handle deadlocks** - wrap in try-catch and consider retry logic
+- **Test under load** - race conditions only appear under concurrent access
+- **Use atomic operations** when possible - they're faster and simpler than locks
+
+```php
+// Handling potential deadlocks with retry logic
+$maxRetries = 3;
+$attempt = 0;
+
+while ($attempt < $maxRetries) {
+    try {
+        DB::transaction(function () {
+            // Your locked operations here
+        });
+        break; // Success, exit loop
+    } catch (\Illuminate\Database\QueryException $e) {
+        if ($e->getCode() === '40001') { // Deadlock error code
+            $attempt++;
+            if ($attempt >= $maxRetries) {
+                throw $e;
+            }
+            usleep(100000); // Wait 100ms before retry
+        } else {
+            throw $e;
+        }
+    }
+}
+```
