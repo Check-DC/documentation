@@ -13,3 +13,4 @@ As an Engineer, code review/refactoring is one of the most important aspects of 
 - [API Best Practices](https://github.com/Check-DC/documentation/blob/main/api-best-practices.md)
 - [UI Best Practices](https://github.com/Check-DC/documentation/blob/main/ui-best-practices.md)
 - [Nuxt(Vue) Best Practices](https://github.com/Check-DC/documentation/blob/main/nuxt-best-practices.md)
+- [Gitflow & CI/CD Workflow](https://github.com/Check-DC/documentation/blob/main/gitflow-branching-strategy.md)
